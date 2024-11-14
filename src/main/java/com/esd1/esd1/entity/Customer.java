@@ -12,6 +12,7 @@ import lombok.*;
 @Table(name = "customer")
 public class Customer {
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
