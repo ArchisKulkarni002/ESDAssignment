@@ -6,6 +6,7 @@ import com.esd1.esd1.dto.LoginRequest;
 import com.esd1.esd1.entity.Customer;
 import com.esd1.esd1.exception.CustomerNotFoundException;
 import com.esd1.esd1.helper.EncryptionService;
+import com.esd1.esd1.helper.JWTHelper;
 import com.esd1.esd1.mapper.CustomerMapper;
 import com.esd1.esd1.repo.CustomerRepo;
 import jakarta.validation.Valid;
@@ -22,6 +23,7 @@ public class CustomerService {
     private final CustomerRepo repo;
     private final CustomerMapper mapper;
     private final EncryptionService encryptionService;
+    private final JWTHelper jwtHelper;
     public String createCustomer(CustomerRequest request) {
         Customer customer = mapper.toEntity(request);
         customer.setPassword(encryptionService.encode(customer.getPassword()));
@@ -33,7 +35,7 @@ public class CustomerService {
         //first we search the customer
         Customer customer = findCustomer(request.email());
         if (customer.getEmail().equals(request.email()) && encryptionService.validates(request.password(),customer.getPassword())) {
-            return "Logged in";
+            return jwtHelper.generateToken(request.email());
         }else{
             return "Wrong email or password";
         }

@@ -3,6 +3,7 @@ package com.esd1.esd1.helper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -12,7 +13,8 @@ import java.util.function.Function;
 
 @Component
 public class JWTHelper {
-    private String SECRET_KEY = "cr666N7wIV+KJ2xOQpWtcfAekL4YXd9gbnJMs8SJ9sI=";
+    @Value("${jwt.secret}")
+    private String SECRET_KEY;
 
     // Extract username from the token
     public String extractUsername(String token) {
