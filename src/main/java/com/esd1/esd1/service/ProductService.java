@@ -2,9 +2,10 @@ package com.esd1.esd1.service;
 
 import com.esd1.esd1.dto.ProductRequest;
 import com.esd1.esd1.entity.Product;
-import com.esd1.esd1.exception.CustomerNotFoundException;
+import com.esd1.esd1.exception.ProductNotFoundException;
 import com.esd1.esd1.mapper.ProductMapper;
 import com.esd1.esd1.repo.ProductRepo;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,21 +25,35 @@ public class ProductService {
         return "Created";
     }
 
-    public List<Product> detailsProduct(ProductRequest request) {
+    public Product detailsProduct(ProductRequest request) {
         //first we search the customer
         return findProduct(request.productName());
     }
 
+    public List<Product> detailsTop2Product(ProductRequest request) {
+        //first we search the customer
+        return repo.findTop2Between15And30();
+    }
+
+    public Product updateProduct(ProductRequest request) {
+        //first we search the customer
+        Product product = findProduct(request.productName());
+        product.setPrice(request.productPrice());
+        repo.save(product);
+        return product;
+    }
+
+    @Transactional
+    public String deleteProduct(ProductRequest request) {
+        //first we search the customer
+        repo.deleteByName(request.productName());
+        return "Deleted product with name "+request.productName()+".";
+    }
+
     //    Utility functions
-    public List<Product> findProduct(String name){
-        List<Product> products = repo.findByName(name);
-
-        if (products.isEmpty()) {
-            throw new CustomerNotFoundException(
-                    String.format("Failed to find Product:: No product found with the provided name:: %s", name)
-            );
-        }
-
-        return products;
+    public Product findProduct(String name){
+        return repo.findByName(name).orElseThrow((() -> new ProductNotFoundException(
+                format("Failed to find Product:: No product found with the provided name:: %s", name)
+        )));
     }
 }
