@@ -25,12 +25,12 @@ public class ProductService {
         return "Created";
     }
 
-    public Product detailsProduct(ProductRequest request) {
+    public Product detailsProduct(String productName) {
         //first we search the customer
-        return findProduct(request.productName());
+        return findProduct(productName);
     }
 
-    public List<Product> detailsTop2Product(ProductRequest request) {
+    public List<Product> detailsTop2Product() {
         //first we search the customer
         return repo.findTop2Between15And30();
     }

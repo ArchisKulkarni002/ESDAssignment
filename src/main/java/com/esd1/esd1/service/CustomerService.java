@@ -9,6 +9,7 @@ import com.esd1.esd1.helper.EncryptionService;
 import com.esd1.esd1.helper.JWTHelper;
 import com.esd1.esd1.mapper.CustomerMapper;
 import com.esd1.esd1.repo.CustomerRepo;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,9 +42,9 @@ public class CustomerService {
         }
     }
 
-    public Customer detailsCustomer(LoginRequest request) {
+    public Customer detailsCustomer(String email) {
         //first we search the customer
-        return findCustomer(request.email());
+        return findCustomer(email);
     }
 
 //    Utility functions
@@ -51,5 +52,22 @@ public class CustomerService {
         return repo.findByEmail(email).orElseThrow(() -> new CustomerNotFoundException(
                 format("Failed to find Customer:: No customer found with the provided email:: %s", email)
         ));
+    }
+
+    public Customer updateCustomer(@Valid CustomerRequest request) {
+        Customer customer = findCustomer(request.email());
+        customer.setCity(request.city());
+        customer.setAddress(request.address());
+        customer.setFirstName(request.firstName());
+        customer.setLastName(request.lastName());
+        customer.setPincode(request.pinCode());
+        repo.save(customer);
+        return customer;
+    }
+
+    @Transactional
+    public String deleteCustomer(@Valid CustomerRequest request) {
+        repo.deleteByEmail(request.email());
+        return "Deleted customer with name "+request.email()+".";
     }
 }
